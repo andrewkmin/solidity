@@ -9,10 +9,17 @@ contract ERCToken {
      uint256 public totalSupply;
 
      // Constructor
-     function ERCToken (uint _totalSupply) {
+     function ERCToken(uint _totalSupply) {
         totalSupply = _totalSupply;
         balances[msg.sender] = _totalSupply;
     }
+
+    function totalSupply() constant returns (uint totalSupply) {
+        return totalSupply;
+    }
+
+    event Transfer(address _from, address _to, uint _value);
+    event Approval(address _owner, address _spender, uint _value);
 
     /*
      *  Read and write storage functions
@@ -24,6 +31,7 @@ contract ERCToken {
         require(balances[msg.sender] >= _value);
         balances[msg.sender] -= _value;
         balances[_to] += _value;
+        Transfer(msg.sender, _to, _value);
         return true;
     }
 
@@ -37,6 +45,7 @@ contract ERCToken {
         balances[_from] -= _value;
         balances[_to] += _value;
         allowed[_from][msg.sender] -= _value;
+        Transfer(_from, _to, _value);
         return true;
     }
 
@@ -51,6 +60,7 @@ contract ERCToken {
     /// @param _value Number of approved tokens.
     function approve(address _spender, uint256 _value) returns (bool success) {
         allowed[msg.sender][_spender] = _value;
+        Approval(msg.sender, _spender, _value);
         return true;
     }
 
@@ -59,4 +69,5 @@ contract ERCToken {
     /// @param _spender Address of token spender.
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
       return allowed[_owner][_spender];
-  }
+    }
+}
